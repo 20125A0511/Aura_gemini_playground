@@ -1,0 +1,27 @@
+{
+  "name": "aura-ai-therapy",
+  "version": "1.0.0",
+  "description": "AI-powered therapy assistant with 5-stage therapeutic process",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'Static site - no build needed'",
+    "start": "vercel dev"
+  },
+  "keywords": [
+    "ai",
+    "therapy",
+    "mental-health",
+    "cbt",
+    "dbt",
+    "mindfulness"
+  ],
+  "author": "Aura AI Therapy",
+  "license": "MIT",
+  "devDependencies": {
+    "vercel": "^32.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

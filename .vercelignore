@@ -1,0 +1,17 @@
+# Ignore config files with sensitive data
+config.js
+
+# Ignore development files
+.DS_Store
+Thumbs.db
+*.log
+
+# Ignore IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ignore git files
+.git/
+.gitignore
