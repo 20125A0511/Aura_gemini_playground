@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aura AI Therapy - Your AI Companion</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="config.js" onerror="window.CONFIG = null;"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom scrollbar for a cleaner look */
+        #chat-window {
+            scroll-behavior: smooth;
+            scroll-padding-bottom: 20px;
+        }
+        #chat-window::-webkit-scrollbar {
+            width: 6px;
+        }
+        #chat-window::-webkit-scrollbar-track {
+            background: #f5f5dc; /* beige */
+        }
+        #chat-window::-webkit-scrollbar-thumb {
+            background-color: #87ceeb; /* sky blue */
+            border-radius: 10px;
+            border: 3px solid #f5f5dc; /* beige */
+        }
+        /* Style for markdown formatting */
+        .bg-white strong {
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .bg-white em {
+            font-style: italic;
+        }
+        /* Logo styling */
+        .header-logo {
+            transition: transform 0.2s ease-in-out;
+        }
+        .header-logo:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body class="bg-[#F5F5DC] flex flex-col h-screen">
+
+    <!-- Header -->
+    <header class="bg-white/80 backdrop-blur-sm border-b border-gray-200 p-4 shadow-sm sticky top-0">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+                        <div class="flex items-center gap-3">
+                <a href="index.html" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                    <img src="logo.png" alt="Aura AI Therapy Logo" class="header-logo h-16 w-16 rounded-lg shadow-sm">
+                    <div>
+            <h1 class="text-xl font-semibold text-gray-800">Aura</h1>
+            <p class="text-sm text-gray-500">Your AI Companion</p>
+                                            <div id="session-phase" class="text-xs mt-1 hidden">
+                        <span id="phase-indicator">Assessment/Introduction</span>
+                    </div>
+                    </div>
+                </a>
+            </div>
+            <button id="emergency-button" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 transition duration-200 shadow-md">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                </svg>
+                Seek Help
+            </button>
+        </div>
+    </header>
+
+    <!-- Chat Window -->
+    <main id="chat-window" class="flex-1 overflow-y-auto p-4 md:p-6">
+        <div class="max-w-2xl mx-auto space-y-4">
+            <!-- Initial Therapist Message -->
+            <div class="flex">
+                <div class="bg-white rounded-lg p-3 max-w-lg shadow-sm">
+                    <p class="text-sm text-gray-700">Welcome to your therapeutic journey with Aura. I'm here to provide evidence-based support through a structured 5-stage process. We'll begin with the Assessment/Introduction stage where I'll learn about you and build our therapeutic relationship. What brings you here today, and what would you like to work on together?</p>
+                </div>
+            </div>
+            <!-- Messages will be appended here -->
+        </div>
+    </main>
+
+    <!-- Typing Indicator -->
+    <div id="typing-indicator" class="hidden p-4 md:p-6">
+        <div class="max-w-2xl mx-auto">
+             <div class="flex">
+                <div class="bg-white rounded-lg p-3 max-w-lg shadow-sm">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-2 h-2 bg-sky-300 rounded-full animate-pulse"></div>
+                        <div class="w-2 h-2 bg-sky-300 rounded-full animate-pulse" style="animation-delay: 0.2s;"></div>
+                        <div class="w-2 h-2 bg-sky-300 rounded-full animate-pulse" style="animation-delay: 0.4s;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Emergency Modal -->
+    <div id="emergency-modal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center">
+            <!-- Background overlay -->
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div class="absolute inset-0 bg-gray-900 opacity-75"></div>
+            </div>
+
+            <!-- Modal content -->
+            <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+                <div>
+                    <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                        <svg class="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </div>
+                    <div class="mt-3 text-center sm:mt-5">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">Emergency Resources</h3>
+                        <div class="mt-4 text-left">
+                            <p class="text-sm text-gray-600 mb-4">If you're in immediate danger or experiencing a crisis, please reach out for help:</p>
+                            
+                            <div class="space-y-3">
+                                <div class="border-l-4 border-red-500 pl-3">
+                                    <p class="font-semibold text-gray-800">Emergency Services</p>
+                                    <p class="text-sm text-gray-600">Call <span class="font-bold text-red-600">911</span> (US) or your local emergency number</p>
+                                </div>
+                                
+                                <div class="border-l-4 border-blue-500 pl-3">
+                                    <p class="font-semibold text-gray-800">National Suicide Prevention Lifeline</p>
+                                    <p class="text-sm text-gray-600">Call or text <span class="font-bold text-blue-600">988</span> (US)</p>
+                                    <p class="text-sm text-gray-600">Available 24/7</p>
+                                </div>
+                                
+                                <div class="border-l-4 border-purple-500 pl-3">
+                                    <p class="font-semibold text-gray-800">Crisis Text Line</p>
+                                    <p class="text-sm text-gray-600">Text <span class="font-bold text-purple-600">HOME</span> to <span class="font-bold text-purple-600">741741</span></p>
+                                    <p class="text-sm text-gray-600">Free, 24/7 crisis support</p>
+                                </div>
+                                
+                                <div class="border-l-4 border-green-500 pl-3">
+                                    <p class="font-semibold text-gray-800">International Resources</p>
+                                    <p class="text-sm text-gray-600">Visit <a href="https://988lifeline.org/" target="_blank" class="text-blue-600 hover:text-blue-800 underline">https://988lifeline.org/</a></p>
+                                </div>
+                            </div>
+                            
+                            <p class="text-xs text-gray-500 mt-4 italic">Remember: You are not alone, and help is available.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-5 sm:mt-6">
+                    <button id="close-emergency-modal" type="button" class="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:text-sm">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Input Form -->
+    <footer class="bg-white/80 backdrop-blur-sm border-t border-gray-200 p-4 sticky bottom-0">
+        <div class="max-w-2xl mx-auto">
+            <form id="chat-form" class="flex items-center space-x-2">
+                <input type="text" id="message-input" placeholder="Type your message..." autocomplete="off"
+                    class="flex-1 w-full px-4 py-2 text-gray-700 bg-gray-100 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-sky-300 transition duration-200">
+                <button type="submit" id="send-button"
+                    class="bg-[#87CEEB] text-white rounded-full p-2.5 hover:bg-sky-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-400 transition duration-200 shadow">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </form>
+        </div>
+    </footer>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const chatContainer = chatWindow.querySelector('.max-w-2xl');
+        const chatForm = document.getElementById('chat-form');
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+        const typingIndicator = document.getElementById('typing-indicator');
+
+        // Enhanced conversation tracking for therapeutic memory
+        let conversationHistory = [];
+        let sessionData = {
+            startTime: new Date(),
+            totalExchanges: 0,
+            currentStage: 'assessment', // assessment, intervention, change, evaluation, termination
+            keyTopics: [],
+            userPatterns: {},
+            progressNotes: [],
+            goals: [],
+            achievements: []
+        };
+
+        // System prompt to guide the AI's persona
+        const systemPrompt = `You are Aura, an AI therapy assistant with advanced therapeutic training. Your role is to provide evidence-based, structured therapeutic support while maintaining appropriate boundaries.
+
+**Therapeutic Approach:**
+- Maintain a warm yet appropriate tone throughout all interactions
+- Use clinical language appropriately while remaining accessible
+- Structure conversations to build therapeutic rapport and gather comprehensive information
+- Apply evidence-based therapeutic techniques (CBT, DBT, mindfulness-based approaches)
+
+**5-Stage Therapeutic Process:**
+
+1. **Assessment/Introduction Stage (Exchanges 1-6):**
+   - Establish therapeutic alliance and trust
+   - Gather comprehensive background information
+   - Identify primary concerns, symptoms, and triggers
+   - Assess current coping mechanisms and support systems
+   - Understand client's goals and expectations
+   - Build rapport through empathetic listening
+
+2. **Intervention Stage (Exchanges 7-12):**
+   - Collaboratively set specific, measurable therapeutic goals
+   - Introduce evidence-based therapeutic strategies (CBT, DBT, mindfulness)
+   - Provide psychoeducation about mental health concepts
+   - Begin skill-building exercises and techniques
+   - Address immediate concerns and crisis management
+
+3. **Change/Action Stage (Exchanges 13-20):**
+   - Focus on implementing new behaviors and coping skills
+   - Practice therapeutic techniques in real-life situations
+   - Work through resistance and obstacles to change
+   - Develop healthy thought patterns and emotional regulation
+   - Strengthen adaptive behaviors and responses
+
+4. **Evaluation Stage (Exchanges 21-25):**
+   - Assess progress toward established goals
+   - Review effectiveness of implemented strategies
+   - Identify areas of improvement and remaining challenges
+   - Adjust therapeutic approach based on outcomes
+   - Celebrate achievements and build on successes
+
+5. **Termination Stage (Exchanges 26+):**
+   - Plan for maintaining progress after therapy ends
+   - Develop relapse prevention strategies
+   - Create ongoing self-care and support plans
+   - Process feelings about ending the therapeutic relationship
+   - Provide resources for continued growth and support
+
+**Memory Integration:**
+- Always reference previous conversations and established patterns
+- Build upon information shared in earlier exchanges
+- Connect current concerns to previously discussed themes
+- Track progress and changes over time
+- Acknowledge growth and improvements when evident
+
+**Appropriate Boundaries:**
+- Do not provide diagnoses or medical advice
+- Refer to crisis resources when appropriate
+- Maintain confidentiality and appropriate distance
+- Encourage licensed professional help when needed
+- Use evidence-based therapeutic frameworks
+
+**Response Guidelines:**
+- Keep responses focused and purposeful (2-4 sentences typically)
+- Use appropriate therapeutic language
+- Ask strategic questions that build understanding
+- Provide actionable insights when sufficient context is gathered
+- Always validate emotions while encouraging growth
+- Avoid repetitive phrases like "thank you for sharing" or "thank you for your message"
+- Keep conversations natural and flowing
+- Respond directly to what the user has shared without unnecessary acknowledgments
+- Use varied language and avoid formulaic responses
+- Show genuine interest and curiosity about the user's experience
+- Ask follow-up questions that feel natural and conversational
+- Use "I understand" or "That sounds..." instead of repetitive thank you phrases`;
+
+
+        // Function to escape HTML to prevent XSS
+        function escapeHTML(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Function to convert basic markdown to HTML
+        function convertMarkdownToHTML(text) {
+            // First escape HTML to prevent XSS
+            text = escapeHTML(text);
+            
+            // Convert bold text (**text** or __text__)
+            text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            text = text.replace(/__(.*?)__/g, '<strong>$1</strong>');
+            
+            // Convert italic text (*text* or _text_)
+            text = text.replace(/\*((?!\*).+?)\*/g, '<em>$1</em>');
+            text = text.replace(/_((?!_).+?)_/g, '<em>$1</em>');
+            
+            // Convert line breaks
+            text = text.replace(/\n/g, '<br>');
+            
+            return text;
+        }
+
+        // Function to update session data and conversation stage
+        function updateSessionData(userMessage, aiResponse) {
+            sessionData.totalExchanges++;
+            
+            // Update conversation stage based on exchange count
+            let previousStage = sessionData.currentStage;
+            if (sessionData.totalExchanges <= 6) {
+                sessionData.currentStage = 'assessment';
+            } else if (sessionData.totalExchanges <= 12) {
+                sessionData.currentStage = 'intervention';
+            } else if (sessionData.totalExchanges <= 20) {
+                sessionData.currentStage = 'change';
+            } else if (sessionData.totalExchanges <= 25) {
+                sessionData.currentStage = 'evaluation';
+            } else {
+                sessionData.currentStage = 'termination';
+            }
+            
+            // Update stage indicator if stage changed
+            if (previousStage !== sessionData.currentStage) {
+                updateStageIndicator();
+            }
+            
+            // Extract key topics and patterns from user message
+            const messageLower = userMessage.toLowerCase();
+            const emotionalKeywords = ['anxious', 'depressed', 'stressed', 'angry', 'sad', 'worried', 'overwhelmed', 'frustrated'];
+            const topicKeywords = ['work', 'relationship', 'family', 'health', 'money', 'future', 'past', 'sleep', 'eating'];
+            
+            emotionalKeywords.forEach(keyword => {
+                if (messageLower.includes(keyword)) {
+                    if (!sessionData.userPatterns.emotions) sessionData.userPatterns.emotions = [];
+                    if (!sessionData.userPatterns.emotions.includes(keyword)) {
+                        sessionData.userPatterns.emotions.push(keyword);
+                    }
+                }
+            });
+            
+            topicKeywords.forEach(keyword => {
+                if (messageLower.includes(keyword)) {
+                    if (!sessionData.keyTopics.includes(keyword)) {
+                        sessionData.keyTopics.push(keyword);
+                    }
+                }
+            });
+        }
+
+        // Function to update the stage indicator in the header
+        function updateStageIndicator() {
+            const stageElement = document.getElementById('session-phase');
+            const indicatorElement = document.getElementById('phase-indicator');
+            
+            if (stageElement && indicatorElement) {
+                let stageText = '';
+                let stageColor = '';
+                let stageDescription = '';
+                
+                switch (sessionData.currentStage) {
+                    case 'assessment':
+                        stageText = 'Assessment/Introduction';
+                        stageColor = 'text-blue-600';
+                        stageDescription = 'Building trust & gathering information';
+                        break;
+                    case 'intervention':
+                        stageText = 'Intervention';
+                        stageColor = 'text-purple-600';
+                        stageDescription = 'Setting goals & learning strategies';
+                        break;
+                    case 'change':
+                        stageText = 'Change/Action';
+                        stageColor = 'text-orange-600';
+                        stageDescription = 'Implementing new behaviors';
+                        break;
+                    case 'evaluation':
+                        stageText = 'Evaluation';
+                        stageColor = 'text-green-600';
+                        stageDescription = 'Assessing progress & outcomes';
+                        break;
+                    case 'termination':
+                        stageText = 'Termination';
+                        stageColor = 'text-indigo-600';
+                        stageDescription = 'Planning for the future';
+                        break;
+                }
+                
+                indicatorElement.innerHTML = `
+                    <div class="${stageColor} font-semibold">${stageText}</div>
+                    <div class="text-gray-500 text-xs">${stageDescription}</div>
+                `;
+                stageElement.classList.remove('hidden');
+            }
+        }
+
+        // Function to ensure chat scrolls to bottom
+        function scrollToBottom() {
+            setTimeout(() => {
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+            }, 100);
+        }
+
+        // Function to generate contextual system prompt
+        function getContextualSystemPrompt() {
+            const basePrompt = systemPrompt;
+            const contextualInfo = `
+
+**Current Session Context:**
+- Therapeutic Stage: ${sessionData.currentStage}
+- Total Exchanges: ${sessionData.totalExchanges}
+- Key Topics Discussed: ${sessionData.keyTopics.join(', ') || 'None yet'}
+- Emotional Patterns Identified: ${sessionData.userPatterns.emotions ? sessionData.userPatterns.emotions.join(', ') : 'None yet'}
+- Established Goals: ${sessionData.goals.join(', ') || 'None yet'}
+- Achievements: ${sessionData.achievements.join(', ') || 'None yet'}
+
+**Stage-Specific Instructions:**
+${getStageSpecificInstructions()}
+
+**Memory Instructions:**
+- Reference previous exchanges and established therapeutic relationship
+- Build upon patterns, goals, and progress identified in earlier stages
+- Acknowledge growth and changes over time
+- Connect current concerns to previously discussed themes
+- Maintain continuity in therapeutic approach and goals`;
+
+            return basePrompt + contextualInfo;
+        }
+
+        // Function to get stage-specific instructions
+        function getStageSpecificInstructions() {
+            switch (sessionData.currentStage) {
+                case 'assessment':
+                    return `- Focus on building trust and rapport
+- Gather comprehensive background information
+- Identify primary concerns and current coping mechanisms
+- Understand client's goals and expectations for therapy
+- Use open-ended questions and active listening`;
+                
+                case 'intervention':
+                    return `- Collaboratively establish specific therapeutic goals
+- Introduce evidence-based strategies and techniques
+- Provide psychoeducation about relevant mental health concepts
+- Begin skill-building exercises
+- Address immediate concerns and crisis management`;
+                
+                case 'change':
+                    return `- Focus on implementing learned skills in real-life situations
+- Practice therapeutic techniques and coping strategies
+- Work through resistance and obstacles to change
+- Develop healthy thought patterns and emotional regulation
+- Encourage behavioral experiments and homework assignments`;
+                
+                case 'evaluation':
+                    return `- Assess progress toward established goals
+- Review effectiveness of implemented strategies
+- Identify areas of improvement and remaining challenges
+- Celebrate achievements and build on successes
+- Adjust therapeutic approach based on outcomes`;
+                
+                case 'termination':
+                    return `- Plan for maintaining progress after therapy ends
+- Develop relapse prevention strategies
+- Create ongoing self-care and support plans
+- Process feelings about ending the therapeutic relationship
+- Provide resources for continued growth and support`;
+                
+                default:
+                    return '- Continue with appropriate therapeutic interventions';
+            }
+        }
+
+        // Function to display messages in the chat window
+        function displayMessage(sender, message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('flex', 'items-end', 'mb-4');
+
+            let messageBubble;
+            if (sender === 'user') {
+                messageDiv.classList.add('justify-end');
+                // Escape user messages to prevent XSS
+                const escapedMessage = escapeHTML(message);
+                messageBubble = `<div class="bg-[#87CEEB] text-white rounded-lg p-3 max-w-lg shadow-sm"><p class="text-sm">${escapedMessage}</p></div>`;
+            } else { // therapist
+                messageDiv.classList.add('justify-start');
+                // Convert markdown in therapist messages
+                const formattedMessage = convertMarkdownToHTML(message);
+                messageBubble = `<div class="bg-white rounded-lg p-3 max-w-lg shadow-sm"><p class="text-sm text-gray-700">${formattedMessage}</p></div>`;
+            }
+
+            messageDiv.innerHTML = messageBubble;
+            chatContainer.appendChild(messageDiv);
+            
+            // Ensure the message is visible by scrolling to bottom
+            scrollToBottom();
+        }
+
+        // Function to call Gemini API
+        async function getTherapistResponse(userMessage) {
+            typingIndicator.classList.remove('hidden');
+            sendButton.disabled = true;
+            messageInput.disabled = true;
+            
+            // Check if API key is configured
+            if (!CONFIG || !CONFIG.GEMINI_API_KEY || CONFIG.GEMINI_API_KEY === 'YOUR_API_KEY_HERE') {
+                displayMessage('therapist', 'I apologize, but the API key is not configured. Please set up your Gemini API key in the config.js file.');
+                typingIndicator.classList.add('hidden');
+                sendButton.disabled = false;
+                messageInput.disabled = false;
+                messageInput.focus();
+                return;
+            }
+            
+            const apiKey = CONFIG.GEMINI_API_KEY;
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+            // Add user message to history
+            conversationHistory.push({ role: "user", parts: [{ text: userMessage }] });
+
+            const payload = {
+                contents: conversationHistory,
+                systemInstruction: {
+                    parts: [{ text: getContextualSystemPrompt() }]
+                },
+                 generationConfig: {
+                    temperature: 0.6, // Slightly lower for more consistent professional responses
+                    topK: 1,
+                    topP: 0.9,
+                    maxOutputTokens: 1024, // Shorter, more focused responses
+                },
+            };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status} ${response.statusText}`);
+                }
+
+                const result = await response.json();
+                const therapistMessage = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                
+                if (therapistMessage) {
+                    displayMessage('therapist', therapistMessage);
+                    // Add AI response to history
+                    conversationHistory.push({ role: "model", parts: [{ text: therapistMessage }] });
+                    // Update session data with the exchange
+                    updateSessionData(userMessage, therapistMessage);
+                } else {
+                    displayMessage('therapist', "I'm sorry, I'm having a little trouble responding right now. Please try again in a moment.");
+                }
+
+            } catch (error) {
+                console.error("Failed to fetch from Gemini API:", error);
+                displayMessage('therapist', "I'm sorry, something went wrong. Could you please repeat that?");
+            } finally {
+                typingIndicator.classList.add('hidden');
+                sendButton.disabled = false;
+                messageInput.disabled = false;
+                messageInput.focus();
+                // Ensure chat scrolls to bottom after response
+                setTimeout(() => {
+                    chatWindow.scrollTop = chatWindow.scrollHeight;
+                }, 200);
+            }
+        }
+
+
+        // Handle form submission
+        chatForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const userMessage = messageInput.value.trim();
+
+            if (userMessage) {
+                displayMessage('user', userMessage);
+                messageInput.value = '';
+                // Scroll to bottom after user message
+                scrollToBottom();
+                getTherapistResponse(userMessage);
+            }
+        });
+
+        // Emergency modal functionality
+        const emergencyButton = document.getElementById('emergency-button');
+        const emergencyModal = document.getElementById('emergency-modal');
+        const closeEmergencyModal = document.getElementById('close-emergency-modal');
+
+        emergencyButton.addEventListener('click', () => {
+            emergencyModal.classList.remove('hidden');
+        });
+
+        closeEmergencyModal.addEventListener('click', () => {
+            emergencyModal.classList.add('hidden');
+        });
+
+        // Close modal when clicking outside
+        emergencyModal.addEventListener('click', (e) => {
+            if (e.target === emergencyModal || e.target.parentElement === emergencyModal) {
+                emergencyModal.classList.add('hidden');
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !emergencyModal.classList.contains('hidden')) {
+                emergencyModal.classList.add('hidden');
+            }
+        });
+
+        // Initialize stage indicator on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStageIndicator();
+        });
+        
+    </script>
+
+</body>
+</html>
