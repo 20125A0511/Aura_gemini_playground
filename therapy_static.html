@@ -20,6 +20,8 @@
         #chat-window {
             scroll-behavior: smooth;
             scroll-padding-bottom: 20px;
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+            overscroll-behavior: contain; /* Prevent overscroll */
         }
         #chat-window::-webkit-scrollbar {
             width: 6px;
@@ -31,6 +33,156 @@
             background-color: #87ceeb; /* sky blue */
             border-radius: 10px;
             border: 3px solid #f5f5dc; /* beige */
+        }
+        
+        /* Enhanced chat bubble styling */
+        .message-bubble {
+            word-wrap: break-word;
+            word-break: break-word;
+            hyphens: auto;
+            line-height: 1.5;
+            position: relative;
+            max-width: 85%;
+            margin-bottom: 8px;
+        }
+        
+        .message-bubble p {
+            margin: 0;
+            padding: 0;
+        }
+        
+        /* User message bubbles */
+        .user-message {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 18px 18px 4px 18px;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+        
+        /* Therapist message bubbles */
+        .therapist-message {
+            background: white;
+            color: #374151;
+            border-radius: 18px 18px 18px 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+        }
+        
+        /* Message container improvements */
+        .message-container {
+            display: flex;
+            align-items: flex-end;
+            margin-bottom: 12px;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .message-container.user {
+            justify-content: flex-end;
+        }
+        
+        .message-container.therapist {
+            justify-content: flex-start;
+        }
+        
+        /* Slide in animation */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Mobile-specific improvements */
+        @media (max-width: 640px) {
+            #chat-window {
+                padding-bottom: 120px;
+                padding-left: 12px;
+                padding-right: 12px;
+            }
+            
+            .message-bubble {
+                max-width: 90%;
+                font-size: 14px;
+                line-height: 1.4;
+            }
+            
+            .message-container {
+                margin-bottom: 8px;
+            }
+            
+            /* Better touch targets */
+            .message-bubble {
+                padding: 12px 16px;
+            }
+        }
+        
+        /* Desktop improvements */
+        @media (min-width: 641px) {
+            .message-bubble {
+                max-width: 70%;
+                font-size: 15px;
+            }
+            
+            .message-bubble {
+                padding: 14px 18px;
+            }
+        }
+        
+        /* Scroll to bottom button */
+        .scroll-to-bottom {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 20;
+            opacity: 0;
+            transform: translateY(20px);
+            pointer-events: none;
+        }
+        
+        .scroll-to-bottom.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        
+        .scroll-to-bottom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
+        }
+        
+        .scroll-to-bottom svg {
+            width: 20px;
+            height: 20px;
+            color: white;
+        }
+        
+        /* Mobile scroll button */
+        @media (max-width: 640px) {
+            .scroll-to-bottom {
+                bottom: 90px;
+                right: 16px;
+                width: 44px;
+                height: 44px;
+            }
+            
+            .scroll-to-bottom svg {
+                width: 18px;
+                height: 18px;
+            }
         }
         /* Style for markdown formatting */
         .bg-white strong {
@@ -79,9 +231,9 @@
     <main id="chat-window" class="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6 pb-20 sm:pb-24">
         <div class="max-w-2xl mx-auto space-y-3 sm:space-y-4">
             <!-- Initial Therapist Message -->
-            <div class="flex">
-                <div class="bg-white rounded-lg p-2 sm:p-3 max-w-xs sm:max-w-lg shadow-sm">
-                    <p class="text-xs sm:text-sm text-gray-700">Welcome to your therapeutic journey with Aura. I'm here to provide evidence-based support through a structured 5-stage process. We'll begin with the Assessment/Introduction stage where I'll learn about you and build our therapeutic relationship. What brings you here today, and what would you like to work on together?</p>
+            <div class="message-container therapist">
+                <div class="message-bubble therapist-message">
+                    <p>Welcome to your therapeutic journey with Aura. I'm here to provide evidence-based support through a structured 5-stage process. We'll begin with the Assessment/Introduction stage where I'll learn about you and build our therapeutic relationship. What brings you here today, and what would you like to work on together?</p>
                 </div>
             </div>
             <!-- Messages will be appended here -->
@@ -91,12 +243,12 @@
     <!-- Typing Indicator -->
     <div id="typing-indicator" class="hidden p-3 sm:p-4 md:p-6">
         <div class="max-w-2xl mx-auto">
-             <div class="flex">
-                <div class="bg-white rounded-lg p-3 max-w-lg shadow-sm">
+            <div class="message-container therapist">
+                <div class="message-bubble therapist-message">
                     <div class="flex items-center space-x-2">
-                        <div class="w-2 h-2 bg-sky-300 rounded-full animate-pulse"></div>
-                        <div class="w-2 h-2 bg-sky-300 rounded-full animate-pulse" style="animation-delay: 0.2s;"></div>
-                        <div class="w-2 h-2 bg-sky-300 rounded-full animate-pulse" style="animation-delay: 0.4s;"></div>
+                        <div class="w-2 h-2 bg-gray-400 rounded-full animate-pulse"></div>
+                        <div class="w-2 h-2 bg-gray-400 rounded-full animate-pulse" style="animation-delay: 0.2s;"></div>
+                        <div class="w-2 h-2 bg-gray-400 rounded-full animate-pulse" style="animation-delay: 0.4s;"></div>
                     </div>
                 </div>
             </div>
@@ -177,6 +329,13 @@
         </div>
     </footer>
 
+    <!-- Scroll to Bottom Button -->
+    <button id="scroll-to-bottom" class="scroll-to-bottom" title="Scroll to bottom">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+        </svg>
+    </button>
+
     <script>
         const chatWindow = document.getElementById('chat-window');
         const chatContainer = chatWindow.querySelector('.max-w-2xl');
@@ -184,6 +343,7 @@
         const messageInput = document.getElementById('message-input');
         const sendButton = document.getElementById('send-button');
         const typingIndicator = document.getElementById('typing-indicator');
+        const scrollToBottomBtn = document.getElementById('scroll-to-bottom');
 
         // Enhanced conversation tracking for therapeutic memory
         let conversationHistory = [];
@@ -393,10 +553,51 @@
         }
 
         // Function to ensure chat scrolls to bottom
-        function scrollToBottom() {
-            setTimeout(() => {
+        function scrollToBottom(force = false) {
+            // Use requestAnimationFrame for smoother scrolling
+            requestAnimationFrame(() => {
+                // Multiple attempts to ensure scrolling works on all devices
                 chatWindow.scrollTop = chatWindow.scrollHeight;
-            }, 100);
+                
+                // Additional scroll for mobile devices
+                setTimeout(() => {
+                    chatWindow.scrollTop = chatWindow.scrollHeight;
+                }, 50);
+                
+                // Final scroll attempt
+                setTimeout(() => {
+                    chatWindow.scrollTop = chatWindow.scrollHeight;
+                    // Hide scroll button after scrolling
+                    if (force) {
+                        hideScrollButton();
+                    }
+                }, 150);
+            });
+        }
+        
+        // Function to check if user is near bottom
+        function isNearBottom() {
+            const threshold = 100;
+            return chatWindow.scrollTop + chatWindow.clientHeight >= chatWindow.scrollHeight - threshold;
+        }
+        
+        // Function to show scroll button
+        function showScrollButton() {
+            scrollToBottomBtn.classList.add('visible');
+        }
+        
+        // Function to hide scroll button
+        function hideScrollButton() {
+            scrollToBottomBtn.classList.remove('visible');
+        }
+        
+        // Function to handle scroll events
+        function handleScroll() {
+            if (isNearBottom()) {
+                hideScrollButton();
+            } else {
+                showScrollButton();
+            }
         }
 
         // Function to generate contextual system prompt
@@ -471,19 +672,19 @@ ${getStageSpecificInstructions()}
         // Function to display messages in the chat window
         function displayMessage(sender, message) {
             const messageDiv = document.createElement('div');
-            messageDiv.classList.add('flex', 'items-end', 'mb-3', 'sm:mb-4');
-
+            messageDiv.classList.add('message-container');
+            
             let messageBubble;
             if (sender === 'user') {
-                messageDiv.classList.add('justify-end');
+                messageDiv.classList.add('user');
                 // Escape user messages to prevent XSS
                 const escapedMessage = escapeHTML(message);
-                messageBubble = `<div class="bg-[#87CEEB] text-white rounded-lg p-2 sm:p-3 max-w-xs sm:max-w-lg shadow-sm"><p class="text-xs sm:text-sm">${escapedMessage}</p></div>`;
+                messageBubble = `<div class="message-bubble user-message"><p>${escapedMessage}</p></div>`;
             } else { // therapist
-                messageDiv.classList.add('justify-start');
+                messageDiv.classList.add('therapist');
                 // Convert markdown in therapist messages
                 const formattedMessage = convertMarkdownToHTML(message);
-                messageBubble = `<div class="bg-white rounded-lg p-2 sm:p-3 max-w-xs sm:max-w-lg shadow-sm"><p class="text-xs sm:text-sm text-gray-700">${formattedMessage}</p></div>`;
+                messageBubble = `<div class="message-bubble therapist-message"><p>${formattedMessage}</p></div>`;
             }
 
             messageDiv.innerHTML = messageBubble;
@@ -620,7 +821,45 @@ ${getStageSpecificInstructions()}
             } else {
                 console.log('API key not loaded or invalid');
             }
+            
+            // Handle mobile keyboard and viewport changes
+            handleMobileViewport();
+            
+            // Add scroll event listener
+            chatWindow.addEventListener('scroll', handleScroll);
+            
+            // Add scroll to bottom button event listener
+            scrollToBottomBtn.addEventListener('click', () => {
+                scrollToBottom(true);
+            });
         });
+        
+        // Function to handle mobile viewport changes
+        function handleMobileViewport() {
+            // Handle viewport changes (keyboard appearance)
+            const viewport = window.visualViewport || window;
+            
+            viewport.addEventListener('resize', () => {
+                // Adjust chat window height when keyboard appears/disappears
+                setTimeout(() => {
+                    scrollToBottom();
+                }, 100);
+            });
+            
+            // Handle input focus for mobile
+            messageInput.addEventListener('focus', () => {
+                setTimeout(() => {
+                    scrollToBottom();
+                }, 300); // Wait for keyboard animation
+            });
+            
+            // Handle input blur
+            messageInput.addEventListener('blur', () => {
+                setTimeout(() => {
+                    scrollToBottom();
+                }, 300);
+            });
+        }
         
     </script>
 
