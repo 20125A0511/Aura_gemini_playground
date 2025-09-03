@@ -5,7 +5,8 @@
   "main": "index.html",
   "scripts": {
     "dev": "vercel dev",
-    "start": "vercel dev"
+    "start": "vercel dev",
+    "build": "node build.js"
   },
   "keywords": [
     "ai",

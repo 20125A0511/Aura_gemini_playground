@@ -1,5 +1,4 @@
-# Ignore config files with sensitive data
-config.js
+# Config.js will be generated during build
 
 # Ignore development files
 .DS_Store
