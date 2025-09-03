@@ -10,7 +10,7 @@ To deploy your Aura AI Therapy app to Vercel with the API key, follow these step
 2. **Navigate to Settings → Environment Variables**
 3. **Add a new environment variable:**
    - **Name**: `GEMINI_API_KEY`
-   - **Value**: `AIzaSyDuHfYBuFgQgzCyC89mdGKltothgXpZ_HI`
+  
    - **Environment**: Production, Preview, Development (select all)
 4. **Click "Save"**
 5. **Redeploy your project** (or it will auto-deploy)
