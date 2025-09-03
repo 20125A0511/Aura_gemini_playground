@@ -99,24 +99,30 @@
         /* Mobile-specific improvements */
         @media (max-width: 640px) {
             #chat-window {
-                padding-bottom: 120px;
+                padding-bottom: 140px; /* Increased to prevent input blocking */
                 padding-left: 12px;
                 padding-right: 12px;
+                padding-top: 8px;
             }
             
             .message-bubble {
                 max-width: 90%;
                 font-size: 14px;
-                line-height: 1.4;
+                line-height: 1.5; /* Better line height for readability */
+                padding: 14px 16px; /* Increased padding for better text visibility */
             }
             
             .message-container {
-                margin-bottom: 8px;
+                margin-bottom: 12px; /* Increased spacing between messages */
             }
             
-            /* Better touch targets */
-            .message-bubble {
-                padding: 12px 16px;
+            /* Ensure text is fully visible */
+            .message-bubble p {
+                margin: 0;
+                padding: 0;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+                hyphens: auto;
             }
         }
         
@@ -173,7 +179,7 @@
         /* Mobile scroll button */
         @media (max-width: 640px) {
             .scroll-to-bottom {
-                bottom: 90px;
+                bottom: 100px; /* Adjusted for new input field height */
                 right: 16px;
                 width: 44px;
                 height: 44px;
@@ -184,13 +190,32 @@
                 height: 18px;
             }
         }
-        /* Style for markdown formatting */
-        .bg-white strong {
+        /* Enhanced markdown formatting for better visibility */
+        .therapist-message strong {
             font-weight: 600;
             color: #1f2937;
         }
-        .bg-white em {
+        
+        .therapist-message em {
             font-style: italic;
+            color: #4b5563;
+        }
+        
+        .therapist-message p {
+            color: #374151;
+            line-height: 1.6;
+        }
+        
+        /* Ensure all text is visible */
+        .message-bubble {
+            overflow: visible;
+            white-space: normal;
+        }
+        
+        .message-bubble * {
+            max-width: 100%;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
         /* Logo styling */
         .header-logo {
@@ -314,11 +339,11 @@
     </div>
 
     <!-- Input Form -->
-    <footer class="bg-white/90 backdrop-blur-sm border-t border-gray-200 p-3 sm:p-4 fixed bottom-0 left-0 right-0 z-10">
+    <footer class="bg-white/95 backdrop-blur-sm border-t border-gray-200 p-3 sm:p-4 fixed bottom-0 left-0 right-0 z-10 shadow-lg">
         <div class="max-w-2xl mx-auto">
             <form id="chat-form" class="flex items-center space-x-2">
                 <input type="text" id="message-input" placeholder="Type your message..." autocomplete="off"
-                    class="flex-1 w-full px-3 py-3 sm:px-4 text-gray-700 bg-gray-100 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-sky-300 transition duration-200 text-sm sm:text-base">
+                    class="flex-1 w-full px-4 py-3 sm:px-4 text-gray-700 bg-gray-50 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-sky-300 focus:bg-white transition duration-200 text-sm sm:text-base">
                 <button type="submit" id="send-button"
                     class="bg-[#87CEEB] text-white rounded-full p-3 sm:p-2.5 hover:bg-sky-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-400 transition duration-200 shadow-lg flex-shrink-0 min-w-[48px] min-h-[48px] flex items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-5 sm:w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -848,16 +873,27 @@ ${getStageSpecificInstructions()}
             
             // Handle input focus for mobile
             messageInput.addEventListener('focus', () => {
+                // Add extra padding when keyboard appears
+                document.body.style.paddingBottom = '20px';
                 setTimeout(() => {
                     scrollToBottom();
-                }, 300); // Wait for keyboard animation
+                }, 500); // Wait for keyboard animation
             });
             
             // Handle input blur
             messageInput.addEventListener('blur', () => {
+                // Remove extra padding when keyboard disappears
+                document.body.style.paddingBottom = '0';
                 setTimeout(() => {
                     scrollToBottom();
                 }, 300);
+            });
+            
+            // Handle form submission to ensure proper scrolling
+            chatForm.addEventListener('submit', () => {
+                setTimeout(() => {
+                    scrollToBottom();
+                }, 100);
             });
         }
         
