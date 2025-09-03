@@ -1,31 +1,13 @@
 {
   "version": 2,
-  "builds": [
+  "rewrites": [
     {
-      "src": "index.html",
-      "use": "@vercel/static"
+      "source": "/therapy",
+      "destination": "/therapy_static.html"
     },
     {
-      "src": "therapy_static.html",
-      "use": "@vercel/static"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/therapy",
-      "dest": "/therapy_static.html"
-    },
-    {
-      "src": "/chat",
-      "dest": "/therapy_static.html"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/$1"
+      "source": "/chat",
+      "destination": "/therapy_static.html"
     }
   ],
   "headers": [
